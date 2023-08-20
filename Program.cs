@@ -13,6 +13,7 @@ namespace HomeBookkeeping
     {
         public static void Main(string[] args)
         {
+            
             var host = CreateHostBuilder(args).Build();
 
             using (var scope = host.Services.CreateScope())
@@ -32,7 +33,7 @@ namespace HomeBookkeeping
 
             host.Run();
         }
-
+        
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
         .ConfigureWebHostDefaults(webBuilder =>
@@ -57,7 +58,7 @@ namespace HomeBookkeeping
                             app.UseExceptionHandler("/Home/Error");
                             app.UseHsts();
                         }
-
+                        
                         app.UseHttpsRedirection();
                         app.UseStaticFiles();
 

@@ -96,6 +96,7 @@ namespace HomeBookkeeping.Controllers
         }
         private Dictionary<int, string> GetCategoryNames()
         {
+
             return _dbContext.ExpenseCategories.ToDictionary(category => category.ID, category => category.CategoryName);
         }
 

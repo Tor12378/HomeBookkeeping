@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using HomeBookkeeping.Models;
-using HomeBookkeeping;
 
 namespace HomeBookkeeping.Controllers
 {
-    public class ExpenseCategoryController : Controller 
+    public class ExpenseCategoryController : Controller
     {
         private readonly ExpenseDbContext _dbContext;
 
@@ -19,6 +18,42 @@ namespace HomeBookkeeping.Controllers
         {
             List<ExpenseCategoryModel> categories = _dbContext.ExpenseCategories.ToList();
             return View(categories);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(ExpenseCategoryModel category)
+        {
+            if (ModelState.IsValid)
+            {
+                _dbContext.ExpenseCategories.Add(category);
+                _dbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(category);
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var category = _dbContext.ExpenseCategories.Find(id);
+            if (category != null)
+            {
+                // Проверяем, есть ли связанные затраты с этой категорией
+                bool hasAssociatedExpenses = _dbContext.Expenses.Any(expense => expense.CategoryID == id);
+
+                if (!hasAssociatedExpenses)
+                {
+                    _dbContext.ExpenseCategories.Remove(category);
+                    _dbContext.SaveChanges();
+                }
+                // Возвращаемся на страницу со списком категорий
+                return RedirectToAction("Index");
+            }
+            return NotFound(); // Категория не найдена
         }
     }
 }

@@ -7,6 +7,7 @@
         <tr>
             <th>ID</th>
             <th>Название категории</th>
+            <th>Действия</th>
         </tr>
     </thead>
     <tbody>
@@ -15,7 +16,13 @@
             <tr>
                 <td>@category.ID</td>
                 <td>@category.CategoryName</td>
+                <td>
+                    <a href="@Url.Action("Delete", new { id = category.ID })">Удалить</a>
+                </td>
             </tr>
         }
     </tbody>
 </table>
+
+<a asp-action="Create" class="btn btn-primary">Создать новую</a>
+<a asp-action="Index" asp-controller="Expense" class="btn btn-secondary">Перейти к расходам</a>
