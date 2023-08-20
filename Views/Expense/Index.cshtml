@@ -1,0 +1,28 @@
+﻿@model List<ExpenseModel>
+
+<table>
+    <tr>
+        <th>Дата</th>
+        <th>Категория</th>
+        <th>Сумма</th>
+        <th>Комментарий</th>
+        <th></th>
+    </tr>
+    @foreach (var expense in Model)
+    {
+        <tr>
+            <td>@expense.Date.ToShortDateString()</td>
+            <td>@ViewBag.CategoryNames[expense.CategoryID]</td>
+            <td>@expense.Amount</td>
+            <td>@expense.Comment</td>
+            <td>
+                <a href="@Url.Action("Edit", new { id = expense.ID })">Редактировать</a> |
+                <a href="@Url.Action("Delete", new { id = expense.ID })">Удалить</a>
+            </td>
+        </tr>
+    }
+</table>
+
+<a href="@Url.Action("Create")" class="btn btn-primary">Создать</a>
+
+

@@ -1,0 +1,21 @@
+﻿@model List<ExpenseCategoryModel>
+
+<h2>Список категорий затрат</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Название категории</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.ID</td>
+                <td>@category.CategoryName</td>
+            </tr>
+        }
+    </tbody>
+</table>
