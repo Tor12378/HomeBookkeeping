@@ -17,6 +17,7 @@ namespace HomeBookkeeping.Controllers
         public IActionResult Index()
         {
             List<ExpenseCategoryModel> categories = _dbContext.ExpenseCategories.ToList();
+            ViewBag.Categories = categories;
             return View(categories);
         }
 
@@ -42,7 +43,7 @@ namespace HomeBookkeeping.Controllers
             var category = _dbContext.ExpenseCategories.Find(id);
             if (category != null)
             {
-                // Проверяем, есть ли связанные затраты с этой категорией
+                
                 bool hasAssociatedExpenses = _dbContext.Expenses.Any(expense => expense.CategoryID == id);
 
                 if (!hasAssociatedExpenses)
@@ -50,10 +51,10 @@ namespace HomeBookkeeping.Controllers
                     _dbContext.ExpenseCategories.Remove(category);
                     _dbContext.SaveChanges();
                 }
-                // Возвращаемся на страницу со списком категорий
+                
                 return RedirectToAction("Index");
             }
-            return NotFound(); // Категория не найдена
+            return NotFound(); 
         }
     }
 }

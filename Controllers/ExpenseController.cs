@@ -14,11 +14,27 @@ namespace HomeBookkeeping.Controllers
             _dbContext = dbContext;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(DateTime? startDate, DateTime? endDate, string selectedCategories)
         {
-            List<ExpenseModel> expenses = _dbContext.Expenses.ToList();
-            ViewBag.CategoryNames = GetCategoryNames(); 
-            return View(expenses);
+            IQueryable<ExpenseModel> expenses = _dbContext.Expenses;
+
+            if (!string.IsNullOrEmpty(selectedCategories))
+            {
+                List<int> selectedCategoryIDs = selectedCategories.Split(',').Select(cat => int.Parse(cat)).ToList();
+                expenses = expenses.Where(expense => selectedCategoryIDs.Contains(expense.CategoryID));
+            }
+
+            if (startDate != null && endDate != null)
+            {
+                expenses = expenses.Where(expense => expense.Date >= startDate && expense.Date <= endDate);
+            }
+
+
+
+            ViewBag.CategoryNames = GetCategoryNames();
+            List<ExpenseCategoryModel> categories = _dbContext.ExpenseCategories.ToList();
+            ViewBag.Categories = categories;
+            return View(expenses.ToList());
         }
 
         [HttpGet]
@@ -99,7 +115,7 @@ namespace HomeBookkeeping.Controllers
 
             return _dbContext.ExpenseCategories.ToDictionary(category => category.ID, category => category.CategoryName);
         }
-
+       
     }
 
 }
