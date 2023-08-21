@@ -28,7 +28,7 @@ namespace HomeBookkeeping.Controllers
             {
                 expenses = expenses.Where(expense => expense.Date >= startDate && expense.Date <= endDate);
             }
-
+            expenses = expenses.OrderBy(e => e.Date).Reverse();
 
 
             ViewBag.CategoryNames = GetCategoryNames();
@@ -72,8 +72,7 @@ namespace HomeBookkeeping.Controllers
             List<ExpenseCategoryModel> categories = _dbContext.ExpenseCategories.ToList();
             ViewBag.Categories = new SelectList(categories, "ID", "CategoryName", expense.CategoryID); 
 
-            // Debug output
-            Console.WriteLine($"Expense ID: {expense.ID}, Category ID: {expense.CategoryID}");
+         
 
             return View(expense);
         }
