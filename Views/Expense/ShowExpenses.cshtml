@@ -99,7 +99,7 @@
                 @{
                     var expensesByDate = Model.OrderBy(e => e.Date).ToList();
                     decimal totalAmount = 0;
-                    decimal grandTotalAmount = 0; // Общий итог по всем категориям
+                    decimal grandTotalAmount = 0; 
                     int currentCategoryId = -1;
                 }
                 @foreach (var expense in expensesByDate)
@@ -122,7 +122,7 @@
                         currentCategoryId = expense.CategoryID;
                     }
                     totalAmount += expense.Amount;
-                    grandTotalAmount += expense.Amount; // Добавляем сумму в общий итог
+                    grandTotalAmount += expense.Amount; 
                     <tr>
                         <td>@expense.Date.ToShortDateString()</td>
                         <td>@ViewBag.CategoryNames[expense.CategoryID]</td>
