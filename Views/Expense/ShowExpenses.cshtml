@@ -21,14 +21,6 @@
             border-radius: 5px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-check-input {
-            margin-top: 2px;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -91,55 +83,46 @@
 <body>
 
     <div class="container">
-        <h2>Список расходов</h2>
+        <h2>Список расходов (Фильтрованный)</h2>
 
-        <form method="get" action="@Url.Action("ShowExpenses")" class="mb-4">
-            <div class="row align-items-center">
-                <div class="col-md-3 form-group">
-                    <label for="startDate">Начальная дата:</label>
-                    <input type="date" id="startDate" name="startDate" class="form-control">
-                </div>
-
-                <div class="col-md-3 form-group">
-                    <label for="endDate">Конечная дата:</label>
-                    <input type="date" id="endDate" name="endDate" class="form-control">
-                </div>
-
-                <div class="col-md-4 form-group">
-                    <label>Выберите категории:</label>
-                    @foreach (var category in ViewBag.Categories)
-                    {
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="category-@category.ID" name="selectedCategories" value="@category.ID">
-                            <label class="form-check-label" for="category-@category.ID">@category.CategoryName</label>
-                        </div>
-                    }
-                </div>
-
-                <div class="col-md-2 form-group">
-                    <button type="submit" class="btn btn-primary">Показать расходы</button>
-                </div>
-            </div>
-        </form>
-
-        <table>
-            <tr>
-                <th>Дата</th>
-                <th>Категория</th>
-                <th>Сумма</th>
-                <th>Комментарий</th>
-                <th></th>
-            </tr>
-            @if (!Model.Any())
-            {
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td colspan="5">Нет доступных расходов.</td>
+                    <th>Дата</th>
+                    <th>Категория</th>
+                    <th>Сумма</th>
+                    <th>Комментарий</th>
+                    <th></th>
                 </tr>
-            }
-            else
-            {
-                @foreach (var expense in Model)
+            </thead>
+            <tbody>
+                @{
+                    var expensesByDate = Model.OrderBy(e => e.Date).ToList();
+                    decimal totalAmount = 0;
+                    decimal grandTotalAmount = 0; // Общий итог по всем категориям
+                    int currentCategoryId = -1;
+                }
+                @foreach (var expense in expensesByDate)
                 {
+                    if (currentCategoryId != expense.CategoryID)
+                    {
+                        if (currentCategoryId != -1)
+                        {
+                            <tr>
+                                <td colspan="2"></td>
+                                <td><strong>Итого:</strong></td>
+                                <td><strong>@totalAmount</strong></td>
+                                <td></td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="5"><strong>@ViewBag.CategoryNames[expense.CategoryID]</strong></td>
+                        </tr>
+                        totalAmount = 0;
+                        currentCategoryId = expense.CategoryID;
+                    }
+                    totalAmount += expense.Amount;
+                    grandTotalAmount += expense.Amount; // Добавляем сумму в общий итог
                     <tr>
                         <td>@expense.Date.ToShortDateString()</td>
                         <td>@ViewBag.CategoryNames[expense.CategoryID]</td>
@@ -151,12 +134,23 @@
                         </td>
                     </tr>
                 }
-            }
+                <tr>
+                    <td colspan="2"></td>
+                    <td><strong>Итого:</strong></td>
+                    <td><strong>@totalAmount</strong></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td><strong>Общий итог:</strong></td>
+                    <td><strong>@grandTotalAmount</strong></td>
+                    <td></td>
+                </tr>
+            </tbody>
         </table>
 
         <div class="mt-4 text-right">
-            <a href="@Url.Action("Create")" class="btn btn-primary">Создать</a>
-            <a href="@Url.Action("Index", "ExpenseCategory")" class="btn btn-secondary">Перейти к категориям</a>
+            <a href="@Url.Action("Index")" class="btn btn-primary">Назад</a>
         </div>
     </div>
 

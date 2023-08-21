@@ -14,29 +14,60 @@ namespace HomeBookkeeping.Controllers
             _dbContext = dbContext;
         }
 
-        public IActionResult Index(DateTime? startDate, DateTime? endDate, string selectedCategories)
+        public IActionResult Index(DateTime? startDate, DateTime? endDate, int[] selectedCategories)
         {
             IQueryable<ExpenseModel> expenses = _dbContext.Expenses;
 
-            if (!string.IsNullOrEmpty(selectedCategories))
+            if (startDate.HasValue)
             {
-                List<int> selectedCategoryIDs = selectedCategories.Split(',').Select(cat => int.Parse(cat)).ToList();
-                expenses = expenses.Where(expense => selectedCategoryIDs.Contains(expense.CategoryID));
+                expenses = expenses.Where(e => e.Date >= startDate.Value);
             }
 
-            if (startDate != null && endDate != null)
+            if (endDate.HasValue)
             {
-                expenses = expenses.Where(expense => expense.Date >= startDate && expense.Date <= endDate);
+                expenses = expenses.Where(e => e.Date <= endDate.Value);
             }
+
+            if (selectedCategories != null && selectedCategories.Length > 0)
+            {
+                expenses = expenses.Where(e => selectedCategories.Contains(e.CategoryID));
+            }
+
             expenses = expenses.OrderBy(e => e.Date).Reverse();
-
 
             ViewBag.CategoryNames = GetCategoryNames();
             List<ExpenseCategoryModel> categories = _dbContext.ExpenseCategories.ToList();
             ViewBag.Categories = categories;
+
             return View(expenses.ToList());
         }
+        public IActionResult ShowExpenses(DateTime? startDate, DateTime? endDate, int[] selectedCategories)
+        {
+            IQueryable<ExpenseModel> expenses = _dbContext.Expenses;
 
+            if (startDate.HasValue)
+            {
+                expenses = expenses.Where(e => e.Date >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                expenses = expenses.Where(e => e.Date <= endDate.Value);
+            }
+
+            if (selectedCategories != null && selectedCategories.Length > 0)
+            {
+                expenses = expenses.Where(e => selectedCategories.Contains(e.CategoryID));
+            }
+
+            expenses = expenses.OrderBy(e => e.Date).Reverse();
+
+            ViewBag.CategoryNames = GetCategoryNames();
+            List<ExpenseCategoryModel> categories = _dbContext.ExpenseCategories.ToList();
+            ViewBag.Categories = categories;
+
+            return View("ShowExpenses", expenses.ToList());
+        }
         [HttpGet]
         public IActionResult Create()
         {
